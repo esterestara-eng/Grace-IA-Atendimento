@@ -1,39 +1,190 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grace - Atendimento Virtual</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Grace IA - Assistente virtual inteligente"
+    >
+
+    <title>Grace IA | Assistente Virtual</title>
+
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-  <main class="app">
-    <header>
-      <div class="avatar">G</div>
-      <div>
-        <h1>Grace</h1>
-        <p>Assistente Virtual de Atendimento</p>
-      </div>
-      <span class="online">● Online</span>
-    </header>
 
-    <section id="chat" class="chat" aria-live="polite">
-      <div class="message grace">
-        <strong>Grace</strong>
-        <p>Olá! Eu sou a Grace 😊 Como posso ajudar você?</p>
-      </div>
-    </section>
+    <div class="app">
 
-    <div class="quick-actions">
-      <button data-question="Quais são os horários de atendimento?">Horários</button>
-      <button data-question="Quais produtos vocês oferecem?">Produtos</button>
-      <button data-question="Quais são as formas de pagamento?">Pagamento</button>
-      <button data-question="Quero falar com um atendente.">Atendente</button>
+        <!-- CABEÇALHO -->
+
+        <header class="header">
+
+            <div class="brand">
+
+                <div class="grace-avatar">
+                    G
+                </div>
+
+                <div class="brand-info">
+
+                    <h1>Grace IA</h1>
+
+                    <div class="status">
+                        <span class="status-dot"></span>
+                        Online
+                    </div>
+
+                </div>
+
+            </div>
+
+            <button
+                class="menu-button"
+                id="menuButton"
+                aria-label="Abrir menu"
+            >
+                ⋮
+            </button>
+
+        </header>
+
+
+        <!-- ÁREA DO CHAT -->
+
+        <main
+            class="chat"
+            id="chat"
+        >
+
+            <!-- APRESENTAÇÃO -->
+
+            <section class="welcome">
+
+                <div class="welcome-avatar">
+                    G
+                </div>
+
+                <h2>Olá! 👋</h2>
+
+                <p>
+                    Eu sou a Grace, sua assistente virtual.
+                    Como posso ajudar você hoje?
+                </p>
+
+            </section>
+
+
+            <!-- BOTÕES RÁPIDOS -->
+
+            <section class="quick-actions">
+
+                <button
+                    class="quick-button"
+                    data-message="Quero saber os horários"
+                >
+                    <span>🕐</span>
+                    <strong>Horários</strong>
+                </button>
+
+
+                <button
+                    class="quick-button"
+                    data-message="Quero conhecer os serviços"
+                >
+                    <span>✨</span>
+                    <strong>Serviços</strong>
+                </button>
+
+
+                <button
+                    class="quick-button"
+                    data-message="Quero saber as formas de pagamento"
+                >
+                    <span>💳</span>
+                    <strong>Pagamento</strong>
+                </button>
+
+
+                <button
+                    class="quick-button"
+                    data-message="Quero falar com um atendente"
+                >
+                    <span>👤</span>
+                    <strong>Atendente</strong>
+                </button>
+
+            </section>
+
+
+            <!-- MENSAGENS -->
+
+            <div id="messages"></div>
+
+        </main>
+
+
+        <!-- DIGITANDO -->
+
+        <div
+            class="typing"
+            id="typing"
+        >
+            <span></span>
+            <span></span>
+            <span></span>
+            Grace está digitando...
+        </div>
+
+
+        <!-- CAMPO DE MENSAGEM -->
+
+        <form
+            class="message-form"
+            id="messageForm"
+        >
+
+            <input
+                type="text"
+                id="messageInput"
+                placeholder="Digite sua mensagem..."
+                autocomplete="off"
+                aria-label="Mensagem"
+            >
+
+            <button
+                type="submit"
+                class="send-button"
+                aria-label="Enviar mensagem"
+            >
+                ➤
+            </button>
+
+        </form>
+
+
+        <!-- RODAPÉ -->
+
+        <div class="footer">
+            Grace IA • Assistente virtual
+        </div>
+
     </div>
 
-    <form id="chatForm">
-      <input id="userInput" type="text" placeholder="Digite sua mensagem..." autocomplete="off" required>
-      <button type="submit">Enviar</button>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
+
     </form>
   </main>
   <script src="script.js"></script>
