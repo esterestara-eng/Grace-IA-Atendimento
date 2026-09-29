@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -17,7 +18,9 @@
     <title>Grace IA | Assistente Virtual</title>
 
     <link rel="stylesheet" href="style.css">
+
 </head>
+
 
 <body>
 
@@ -38,17 +41,22 @@
                     <h1>Grace IA</h1>
 
                     <div class="status">
+
                         <span class="status-dot"></span>
+
                         Online
+
                     </div>
 
                 </div>
 
             </div>
 
+
             <button
                 class="menu-button"
                 id="menuButton"
+                type="button"
                 aria-label="Abrir menu"
             >
                 ⋮
@@ -57,7 +65,8 @@
         </header>
 
 
-        <!-- ÁREA DO CHAT -->
+
+        <!-- CHAT -->
 
         <main
             class="chat"
@@ -72,7 +81,9 @@
                     G
                 </div>
 
-                <h2>Olá! 👋</h2>
+                <h2>
+                    Olá! 👋
+                </h2>
 
                 <p>
                     Eu sou a Grace, sua assistente virtual.
@@ -82,66 +93,104 @@
             </section>
 
 
+
             <!-- BOTÕES RÁPIDOS -->
 
-            <section class="quick-actions">
+            <section
+                class="quick-actions"
+                aria-label="Opções rápidas"
+            >
 
                 <button
                     class="quick-button"
+                    type="button"
                     data-message="Quero saber os horários"
                 >
+
                     <span>🕐</span>
-                    <strong>Horários</strong>
+
+                    <strong>
+                        Horários
+                    </strong>
+
                 </button>
 
 
                 <button
                     class="quick-button"
+                    type="button"
                     data-message="Quero conhecer os serviços"
                 >
+
                     <span>✨</span>
-                    <strong>Serviços</strong>
+
+                    <strong>
+                        Serviços
+                    </strong>
+
                 </button>
 
 
                 <button
                     class="quick-button"
+                    type="button"
                     data-message="Quero saber as formas de pagamento"
                 >
+
                     <span>💳</span>
-                    <strong>Pagamento</strong>
+
+                    <strong>
+                        Pagamento
+                    </strong>
+
                 </button>
 
 
                 <button
                     class="quick-button"
+                    type="button"
                     data-message="Quero falar com um atendente"
                 >
+
                     <span>👤</span>
-                    <strong>Atendente</strong>
+
+                    <strong>
+                        Atendente
+                    </strong>
+
                 </button>
 
             </section>
 
 
+
             <!-- MENSAGENS -->
 
-            <div id="messages"></div>
+            <div
+                id="messages"
+                aria-live="polite"
+            ></div>
 
         </main>
 
 
-        <!-- DIGITANDO -->
+
+        <!-- INDICADOR DE DIGITAÇÃO -->
 
         <div
             class="typing"
             id="typing"
+            aria-hidden="true"
         >
+
             <span></span>
             <span></span>
             <span></span>
+
             Grace está digitando...
+
         </div>
+
 
 
         <!-- CAMPO DE MENSAGEM -->
@@ -156,37 +205,41 @@
                 id="messageInput"
                 placeholder="Digite sua mensagem..."
                 autocomplete="off"
-                aria-label="Mensagem"
+                aria-label="Digite sua mensagem"
+                maxlength="1000"
             >
+
 
             <button
                 type="submit"
                 class="send-button"
                 aria-label="Enviar mensagem"
             >
+
                 ➤
+
             </button>
 
         </form>
 
 
+
         <!-- RODAPÉ -->
 
-        <div class="footer">
+        <footer class="footer">
+
             Grace IA • Assistente virtual
-        </div>
+
+        </footer>
 
     </div>
 
+
+
+    <!-- JAVASCRIPT -->
 
     <script src="script.js"></script>
 
 </body>
 
-</html>
-
-    </form>
-  </main>
-  <script src="script.js"></script>
-</body>
 </html>
