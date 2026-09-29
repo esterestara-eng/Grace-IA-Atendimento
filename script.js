@@ -1,3 +1,13 @@
+/* =========================================
+   GRACE IA
+   Sistema de atendimento
+========================================= */
+
+
+/* =========================================
+   ELEMENTOS DA PÁGINA
+========================================= */
+
 const form =
     document.getElementById("messageForm");
 
@@ -14,19 +24,40 @@ const quickButtons =
     document.querySelectorAll(".quick-button");
 
 
+/* =========================================
+   ENVIO DA MENSAGEM
+========================================= */
 
-/* =========================
-   ENVIO DO FORMULÁRIO
-========================= */
+form.addEventListener("submit", function (event) {
 
-form.addEventListener(
-    "submit",
-    function (event) {
+    event.preventDefault();
 
-        event.preventDefault();
+    const message =
+        input.value.trim();
+
+    if (!message) {
+        return;
+    }
+
+    sendMessage(message);
+
+    input.value = "";
+
+    input.focus();
+
+});
+
+
+/* =========================================
+   BOTÕES RÁPIDOS
+========================================= */
+
+quickButtons.forEach(function (button) {
+
+    button.addEventListener("click", function () {
 
         const message =
-            input.value.trim();
+            button.dataset.message;
 
         if (!message) {
             return;
@@ -34,69 +65,50 @@ form.addEventListener(
 
         sendMessage(message);
 
-        input.value = "";
+    });
 
-        input.focus();
-    }
-);
+});
 
 
-
-/* =========================
-   BOTÕES RÁPIDOS
-========================= */
-
-quickButtons.forEach(
-    function (button) {
-
-        button.addEventListener(
-            "click",
-            function () {
-
-                const message =
-                    button.dataset.message;
-
-                sendMessage(message);
-
-            }
-        );
-
-    }
-);
-
-
-
-/* =========================
+/* =========================================
    ENVIAR MENSAGEM
-========================= */
+========================================= */
 
 function sendMessage(message) {
 
+    if (!message) {
+        return;
+    }
+
+    /* Mostra mensagem do usuário */
+
     addUserMessage(message);
+
+
+    /* Mostra Grace digitando */
 
     showTyping();
 
-    setTimeout(
-        function () {
 
-            hideTyping();
+    /* Simula tempo de resposta */
 
-            const response =
-                getGraceResponse(message);
+    setTimeout(function () {
 
-            addGraceMessage(response);
+        hideTyping();
 
-        },
-        700
-    );
+        const response =
+            getGraceResponse(message);
+
+        addGraceMessage(response);
+
+    }, 700);
 
 }
 
 
-
-/* =========================
+/* =========================================
    MENSAGEM DO USUÁRIO
-========================= */
+========================================= */
 
 function addUserMessage(message) {
 
@@ -113,6 +125,8 @@ function addUserMessage(message) {
     bubble.className =
         "message-bubble";
 
+
+    /* Segurança contra HTML */
 
     bubble.textContent =
         message;
@@ -134,14 +148,15 @@ function addUserMessage(message) {
 
     messages.appendChild(container);
 
+
     scrollChat();
+
 }
 
 
-
-/* =========================
+/* =========================================
    MENSAGEM DA GRACE
-========================= */
+========================================= */
 
 function addGraceMessage(message) {
 
@@ -179,24 +194,25 @@ function addGraceMessage(message) {
 
     messages.appendChild(container);
 
+
     scrollChat();
+
 }
 
 
-
-/* =========================
-   RESPOSTAS TEMPORÁRIAS
-========================= */
+/* =========================================
+   RESPOSTAS DA GRACE
+========================================= */
 
 function getGraceResponse(message) {
 
     const text =
-        message
-            .toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "");
+        normalizeText(message);
 
 
+    /* -------------------------
+       SAUDAÇÃO
+    ------------------------- */
 
     if (
         text.includes("oi") ||
@@ -211,18 +227,24 @@ function getGraceResponse(message) {
 
             <p>
                 É um prazer falar com você!
+                Eu sou a Grace.
                 Como posso ajudar?
             </p>
         `;
+
     }
 
 
+    /* -------------------------
+       HORÁRIOS
+    ------------------------- */
 
     if (
         text.includes("horario") ||
         text.includes("funciona") ||
         text.includes("abre") ||
-        text.includes("fecha")
+        text.includes("fecha") ||
+        text.includes("atendimento")
     ) {
 
         return `
@@ -233,35 +255,93 @@ function getGraceResponse(message) {
                 de segunda a sexta,
                 das 8h às 18h.
             </p>
+
+            <p>
+                Se precisar, posso ajudar
+                com outras informações.
+            </p>
         `;
+
     }
 
 
+    /* -------------------------
+       SERVIÇOS
+    ------------------------- */
 
     if (
         text.includes("servico") ||
-        text.includes("produto") ||
-        text.includes("preco") ||
-        text.includes("valor")
+        text.includes("servicos")
     ) {
 
         return `
-            <strong>Serviços e produtos ✨</strong>
+            <strong>Serviços ✨</strong>
 
             <p>
-                Posso ajudar você a conhecer
-                nossos serviços e produtos.
+                Posso apresentar nossos
+                serviços e ajudar você
+                a encontrar o que procura.
             </p>
         `;
+
     }
 
 
+    /* -------------------------
+       PRODUTOS
+    ------------------------- */
+
+    if (
+        text.includes("produto") ||
+        text.includes("produtos")
+    ) {
+
+        return `
+            <strong>Produtos 🛍️</strong>
+
+            <p>
+                Posso ajudar você a conhecer
+                nossos produtos.
+            </p>
+        `;
+
+    }
+
+
+    /* -------------------------
+       PREÇOS
+    ------------------------- */
+
+    if (
+        text.includes("preco") ||
+        text.includes("precos") ||
+        text.includes("valor") ||
+        text.includes("quanto custa")
+    ) {
+
+        return `
+            <strong>Preços 💰</strong>
+
+            <p>
+                Posso ajudar você a consultar
+                os preços dos nossos produtos
+                e serviços.
+            </p>
+        `;
+
+    }
+
+
+    /* -------------------------
+       PAGAMENTO
+    ------------------------- */
 
     if (
         text.includes("pagamento") ||
         text.includes("pix") ||
         text.includes("cartao") ||
-        text.includes("pagar")
+        text.includes("pagar") ||
+        text.includes("dinheiro")
     ) {
 
         return `
@@ -269,30 +349,68 @@ function getGraceResponse(message) {
 
             <p>
                 Podemos trabalhar com Pix,
-                cartão e outras formas de pagamento.
+                cartão e outras formas
+                de pagamento.
             </p>
         `;
+
     }
 
 
+    /* -------------------------
+       ATENDENTE
+    ------------------------- */
 
     if (
         text.includes("atendente") ||
         text.includes("humano") ||
-        text.includes("pessoa")
+        text.includes("pessoa") ||
+        text.includes("atendimento humano")
     ) {
 
         return `
             <strong>Atendimento humano 👤</strong>
 
             <p>
-                Claro! Seu atendimento pode
-                ser encaminhado para uma pessoa.
+                Claro! Posso encaminhar
+                você para um atendente.
             </p>
         `;
+
     }
 
 
+    /* -------------------------
+       AGENDAMENTO
+    ------------------------- */
+
+    if (
+        text.includes("agendar") ||
+        text.includes("agendamento") ||
+        text.includes("marcar horario") ||
+        text.includes("marcar")
+    ) {
+
+        return `
+            <strong>Agendamento 📅</strong>
+
+            <p>
+                Posso ajudar você com
+                informações sobre agendamento.
+            </p>
+
+            <p>
+                Em breve essa função estará
+                conectada à agenda da empresa.
+            </p>
+        `;
+
+    }
+
+
+    /* -------------------------
+       AGRADECIMENTO
+    ------------------------- */
 
     if (
         text.includes("obrigado") ||
@@ -308,32 +426,80 @@ function getGraceResponse(message) {
                 pode falar comigo.
             </p>
         `;
+
     }
 
 
+    /* -------------------------
+       DESPEDIDA
+    ------------------------- */
+
+    if (
+        text.includes("tchau") ||
+        text.includes("ate mais") ||
+        text.includes("até mais")
+    ) {
+
+        return `
+            <strong>Até mais! 👋</strong>
+
+            <p>
+                Foi um prazer ajudar você.
+                Quando precisar, estarei por aqui.
+            </p>
+        `;
+
+    }
+
+
+    /* -------------------------
+       RESPOSTA PADRÃO
+    ------------------------- */
 
     return `
         <strong>Entendi 😊</strong>
 
         <p>
-            Ainda estou aprendendo.
-            Você pode perguntar sobre
-            horários, serviços, pagamentos
-            ou solicitar um atendente.
+            Ainda estou aprendendo,
+            mas posso ajudar com:
+        </p>
+
+        <p>
+            🕐 Horários<br>
+            ✨ Serviços<br>
+            🛍️ Produtos<br>
+            💳 Pagamentos<br>
+            📅 Agendamentos<br>
+            👤 Atendimento humano
         </p>
     `;
+
 }
 
 
+/* =========================================
+   NORMALIZAR TEXTO
+========================================= */
 
-/* =========================
-   DIGITANDO
-========================= */
+function normalizeText(text) {
+
+    return text
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+
+}
+
+
+/* =========================================
+   GRACE DIGITANDO
+========================================= */
 
 function showTyping() {
 
     typing.style.display =
         "flex";
+
 }
 
 
@@ -341,13 +507,13 @@ function hideTyping() {
 
     typing.style.display =
         "none";
+
 }
 
 
-
-/* =========================
+/* =========================================
    ROLAR CHAT
-========================= */
+========================================= */
 
 function scrollChat() {
 
@@ -356,13 +522,13 @@ function scrollChat() {
 
     chat.scrollTop =
         chat.scrollHeight;
+
 }
 
 
-
-/* =========================
-   HORÁRIO
-========================= */
+/* =========================================
+   HORÁRIO DA MENSAGEM
+========================================= */
 
 function getTime() {
 
@@ -376,9 +542,5 @@ function getTime() {
             minute: "2-digit"
         }
     );
+
 }
-
-
-document.querySelectorAll(".quick-actions button").forEach(button => {
-  button.addEventListener("click", () => sendMessage(button.dataset.question));
-});
