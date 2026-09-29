@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grace - Atendimento Virtual</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div class="avatar">G</div>
+      <div>
+        <h1>Grace</h1>
+        <p>Assistente Virtual de Atendimento</p>
+      </div>
+      <span class="online">● Online</span>
+    </header>
+
+    <section id="chat" class="chat" aria-live="polite">
+      <div class="message grace">
+        <strong>Grace</strong>
+        <p>Olá! Eu sou a Grace 😊 Como posso ajudar você?</p>
+      </div>
+    </section>
+
+    <div class="quick-actions">
+      <button data-question="Quais são os horários de atendimento?">Horários</button>
+      <button data-question="Quais produtos vocês oferecem?">Produtos</button>
+      <button data-question="Quais são as formas de pagamento?">Pagamento</button>
+      <button data-question="Quero falar com um atendente.">Atendente</button>
+    </div>
+
+    <form id="chatForm">
+      <input id="userInput" type="text" placeholder="Digite sua mensagem..." autocomplete="off" required>
+      <button type="submit">Enviar</button>
+    </form>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
