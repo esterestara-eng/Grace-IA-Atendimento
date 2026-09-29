@@ -4,6 +4,21 @@
     box-sizing: border-box;
 }
 
+:root {
+    --roxo: #6d3df5;
+    --roxo-escuro: #5530c7;
+    --roxo-claro: #f2edff;
+    --fundo: #f8f7fc;
+    --texto: #292334;
+    --texto-suave: #777181;
+    --borda: #e9e4f2;
+    --verde: #42e59b;
+}
+
+
+/* =========================
+   BASE
+========================= */
 
 body {
     min-height: 100vh;
@@ -26,7 +41,7 @@ body {
             #ece9f8
         );
 
-    color: #272238;
+    color: var(--texto);
 
     display: flex;
     justify-content: center;
@@ -46,7 +61,7 @@ body {
 
     height: min(760px, 95vh);
 
-    background: #ffffff;
+    background: white;
 
     border-radius: 28px;
 
@@ -101,7 +116,7 @@ body {
 
     background: white;
 
-    color: #713eea;
+    color: var(--roxo);
 
     display: flex;
     align-items: center;
@@ -141,10 +156,10 @@ body {
 
     border-radius: 50%;
 
-    background: #42e59b;
+    background: var(--verde);
 
     box-shadow:
-        0 0 8px #42e59b;
+        0 0 8px var(--verde);
 }
 
 
@@ -158,6 +173,18 @@ body {
     font-size: 28px;
 
     cursor: pointer;
+
+    width: 40px;
+    height: 40px;
+
+    border-radius: 50%;
+
+    transition: 0.2s;
+}
+
+
+.menu-button:hover {
+    background: rgba(255, 255, 255, 0.15);
 }
 
 
@@ -172,14 +199,35 @@ body {
 
     padding: 28px 20px;
 
-    background: #faf9fd;
+    background: var(--fundo);
+
+    scroll-behavior: smooth;
 }
 
+
+/* BARRA DE ROLAGEM */
+
+.chat::-webkit-scrollbar {
+    width: 5px;
+}
+
+.chat::-webkit-scrollbar-thumb {
+    background: #d7ccef;
+
+    border-radius: 10px;
+}
+
+
+/* =========================
+   APRESENTAÇÃO
+========================= */
 
 .welcome {
     text-align: center;
 
     margin-bottom: 25px;
+
+    animation: aparecer 0.5s ease;
 }
 
 
@@ -221,11 +269,15 @@ body {
 
 
 .welcome p {
-    color: #777181;
+    color: var(--texto-suave);
 
     line-height: 1.5;
 
     font-size: 14px;
+
+    max-width: 330px;
+
+    margin: auto;
 }
 
 
@@ -245,7 +297,7 @@ body {
 
 
 .quick-button {
-    border: 1px solid #e7e1f5;
+    border: 1px solid var(--borda);
 
     background: white;
 
@@ -263,16 +315,28 @@ body {
 
     gap: 7px;
 
-    transition: 0.2s;
+    transition:
+        transform 0.2s,
+        background 0.2s,
+        border-color 0.2s;
+
+    box-shadow:
+        0 3px 10px
+        rgba(70, 45, 120, 0.04);
 }
 
 
 .quick-button:hover {
     transform: translateY(-2px);
 
-    background: #f4f0ff;
+    background: var(--roxo-claro);
 
     border-color: #cfc1f5;
+}
+
+
+.quick-button:active {
+    transform: scale(0.97);
 }
 
 
@@ -298,6 +362,9 @@ body {
     display: flex;
 
     width: 100%;
+
+    animation:
+        mensagemEntrando 0.25s ease;
 }
 
 
@@ -319,6 +386,13 @@ body {
     line-height: 1.5;
 
     font-size: 14px;
+
+    word-wrap: break-word;
+}
+
+
+.message-bubble p {
+    margin-top: 5px;
 }
 
 
@@ -354,6 +428,10 @@ body {
         5px
         18px
         18px;
+
+    box-shadow:
+        0 4px 12px
+        rgba(99, 56, 232, 0.18);
 }
 
 
@@ -386,7 +464,7 @@ body {
         20px
         8px;
 
-    background: #faf9fd;
+    background: var(--fundo);
 
     color: #8b8495;
 
@@ -402,7 +480,8 @@ body {
 
     border-radius: 50%;
 
-    animation: typing 1.2s infinite;
+    animation:
+        typing 1.2s infinite;
 }
 
 
@@ -422,14 +501,17 @@ body {
     60%,
     100% {
         opacity: 0.3;
-        transform: translateY(0);
+
+        transform:
+            translateY(0);
     }
 
     30% {
         opacity: 1;
-        transform: translateY(-3px);
-    }
 
+        transform:
+            translateY(-3px);
+    }
 }
 
 
@@ -471,10 +553,19 @@ body {
     font-size: 14px;
 
     color: #332d3d;
+
+    transition: 0.2s;
+}
+
+
+.message-form input::placeholder {
+    color: #aaa4b1;
 }
 
 
 .message-form input:focus {
+    background: #f1eef8;
+
     box-shadow:
         0 0 0 2px #d8cdf8;
 }
@@ -483,6 +574,8 @@ body {
 .send-button {
     width: 48px;
     height: 48px;
+
+    flex-shrink: 0;
 
     border: none;
 
@@ -501,12 +594,26 @@ body {
 
     cursor: pointer;
 
-    transition: 0.2s;
+    transition:
+        transform 0.2s,
+        background 0.2s;
 }
 
 
 .send-button:hover {
     transform: scale(1.06);
+
+    background:
+        linear-gradient(
+            135deg,
+            #5530c7,
+            #7145d9
+        );
+}
+
+
+.send-button:active {
+    transform: scale(0.95);
 }
 
 
@@ -531,6 +638,46 @@ body {
 
 
 /* =========================
+   ANIMAÇÕES
+========================= */
+
+@keyframes aparecer {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+}
+
+
+@keyframes mensagemEntrando {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+}
+
+
+/* =========================
    CELULAR
 ========================= */
 
@@ -546,10 +693,91 @@ body {
     .app {
         max-width: none;
 
+        width: 100%;
+
         height: 100vh;
+
+        min-height: 100vh;
 
         border-radius: 0;
     }
 
+
+    .header {
+        min-height: 76px;
+
+        padding:
+            13px
+            16px;
+    }
+
+
+    .chat {
+        padding:
+            22px
+            15px;
+    }
+
+
+    .welcome-avatar {
+        width: 65px;
+        height: 65px;
+
+        font-size: 25px;
+    }
+
+
+    .quick-button {
+        padding: 12px 8px;
+
+        font-size: 13px;
+    }
+
+
+    .message-bubble {
+        max-width: 85%;
+    }
+
+
+    .message-form {
+        padding:
+            10px;
+    }
+
 }
+
+
+/* =========================
+   CELULARES PEQUENOS
+========================= */
+
+@media (max-width: 360px) {
+
+    .quick-actions {
+        gap: 7px;
+    }
+
+
+    .quick-button {
+        padding:
+            10px 5px;
+
+        font-size: 12px;
+    }
+
+
+    .message-form input {
+        padding:
+            12px;
+    }
+
+
+    .send-button {
+        width: 44px;
+        height: 44px;
+    }
+
+}
+
+
 
