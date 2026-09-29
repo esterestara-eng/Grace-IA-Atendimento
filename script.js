@@ -1,72 +1,383 @@
-const chat = document.getElementById("chat");
-const form = document.getElementById("chatForm");
-const input = document.getElementById("userInput");
+const form =
+    document.getElementById("messageForm");
 
-function addMessage(text, type) {
-  const box = document.createElement("div");
-  box.className = `message ${type}`;
+const input =
+    document.getElementById("messageInput");
 
-  const name = document.createElement("strong");
-  name.textContent = type === "grace" ? "Grace" : "Você";
+const messages =
+    document.getElementById("messages");
 
-  const p = document.createElement("p");
-  p.textContent = text;
+const typing =
+    document.getElementById("typing");
 
-  box.appendChild(name);
-  box.appendChild(p);
-  chat.appendChild(box);
-  chat.scrollTop = chat.scrollHeight;
+const quickButtons =
+    document.querySelectorAll(".quick-button");
+
+
+
+/* =========================
+   ENVIO DO FORMULÁRIO
+========================= */
+
+form.addEventListener(
+    "submit",
+    function (event) {
+
+        event.preventDefault();
+
+        const message =
+            input.value.trim();
+
+        if (!message) {
+            return;
+        }
+
+        sendMessage(message);
+
+        input.value = "";
+
+        input.focus();
+    }
+);
+
+
+
+/* =========================
+   BOTÕES RÁPIDOS
+========================= */
+
+quickButtons.forEach(
+    function (button) {
+
+        button.addEventListener(
+            "click",
+            function () {
+
+                const message =
+                    button.dataset.message;
+
+                sendMessage(message);
+
+            }
+        );
+
+    }
+);
+
+
+
+/* =========================
+   ENVIAR MENSAGEM
+========================= */
+
+function sendMessage(message) {
+
+    addUserMessage(message);
+
+    showTyping();
+
+    setTimeout(
+        function () {
+
+            hideTyping();
+
+            const response =
+                getGraceResponse(message);
+
+            addGraceMessage(response);
+
+        },
+        700
+    );
+
 }
 
-function getResponse(message) {
-  const text = message.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-  if (text.includes("oi") || text.includes("ola") || text.includes("bom dia") || text.includes("boa tarde")) {
-    return "Olá! 😊 Sou a Grace. Posso ajudar com informações sobre produtos, serviços, horários e atendimento.";
-  }
 
-  if (text.includes("horario") || text.includes("atendimento") && text.includes("horario")) {
-    return "Nosso horário de atendimento é de segunda a sexta, das 8h às 18h. Se precisar de atendimento fora desse horário, posso registrar sua solicitação.";
-  }
+/* =========================
+   MENSAGEM DO USUÁRIO
+========================= */
 
-  if (text.includes("produto") || text.includes("produtos")) {
-    return "Posso ajudar com informações sobre produtos. Para uma resposta específica, informe o nome do produto que você procura.";
-  }
+function addUserMessage(message) {
 
-  if (text.includes("pagamento") || text.includes("pagar")) {
-    return "As formas de pagamento devem ser confirmadas de acordo com o produto ou serviço. Posso encaminhar você para um atendente para confirmar as condições atuais.";
-  }
+    const container =
+        document.createElement("div");
 
-  if (text.includes("preco") || text.includes("valor") || text.includes("quanto custa")) {
-    return "Para evitar informações incorretas, preciso consultar os dados atualizados do produto. Informe qual produto você deseja consultar ou fale com um atendente.";
-  }
+    container.className =
+        "message user";
 
-  if (text.includes("atendente") || text.includes("humano") || text.includes("pessoa")) {
-    return "Claro! 😊 Posso encaminhar sua solicitação para um atendente humano. Aguarde um momento ou procure o canal de atendimento da empresa.";
-  }
 
-  if (text.includes("obrigado") || text.includes("obrigada")) {
-    return "Por nada! 😊 Sempre que precisar, pode chamar a Grace.";
-  }
+    const bubble =
+        document.createElement("div");
 
-  return "Entendi! 😊 Ainda não tenho informações suficientes para responder com segurança. Você pode explicar um pouco mais ou pedir para falar com um atendente.";
+    bubble.className =
+        "message-bubble";
+
+
+    bubble.textContent =
+        message;
+
+
+    const time =
+        document.createElement("span");
+
+    time.className =
+        "message-time";
+
+    time.textContent =
+        getTime();
+
+
+    bubble.appendChild(time);
+
+    container.appendChild(bubble);
+
+    messages.appendChild(container);
+
+    scrollChat();
 }
 
-function sendMessage(text) {
-  if (!text.trim()) return;
-  addMessage(text.trim(), "user");
 
-  setTimeout(() => {
-    addMessage(getResponse(text), "grace");
-  }, 400);
+
+/* =========================
+   MENSAGEM DA GRACE
+========================= */
+
+function addGraceMessage(message) {
+
+    const container =
+        document.createElement("div");
+
+    container.className =
+        "message grace";
+
+
+    const bubble =
+        document.createElement("div");
+
+    bubble.className =
+        "message-bubble";
+
+
+    bubble.innerHTML =
+        message;
+
+
+    const time =
+        document.createElement("span");
+
+    time.className =
+        "message-time";
+
+    time.textContent =
+        getTime();
+
+
+    bubble.appendChild(time);
+
+    container.appendChild(bubble);
+
+    messages.appendChild(container);
+
+    scrollChat();
 }
 
-form.addEventListener("submit", (event) => {
-  event.preventDefault();
-  const text = input.value;
-  input.value = "";
-  sendMessage(text);
-});
+
+
+/* =========================
+   RESPOSTAS TEMPORÁRIAS
+========================= */
+
+function getGraceResponse(message) {
+
+    const text =
+        message
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+
+
+
+    if (
+        text.includes("oi") ||
+        text.includes("ola") ||
+        text.includes("bom dia") ||
+        text.includes("boa tarde") ||
+        text.includes("boa noite")
+    ) {
+
+        return `
+            <strong>Olá! 😊</strong>
+
+            <p>
+                É um prazer falar com você!
+                Como posso ajudar?
+            </p>
+        `;
+    }
+
+
+
+    if (
+        text.includes("horario") ||
+        text.includes("funciona") ||
+        text.includes("abre") ||
+        text.includes("fecha")
+    ) {
+
+        return `
+            <strong>Horários 🕐</strong>
+
+            <p>
+                Nosso atendimento funciona
+                de segunda a sexta,
+                das 8h às 18h.
+            </p>
+        `;
+    }
+
+
+
+    if (
+        text.includes("servico") ||
+        text.includes("produto") ||
+        text.includes("preco") ||
+        text.includes("valor")
+    ) {
+
+        return `
+            <strong>Serviços e produtos ✨</strong>
+
+            <p>
+                Posso ajudar você a conhecer
+                nossos serviços e produtos.
+            </p>
+        `;
+    }
+
+
+
+    if (
+        text.includes("pagamento") ||
+        text.includes("pix") ||
+        text.includes("cartao") ||
+        text.includes("pagar")
+    ) {
+
+        return `
+            <strong>Formas de pagamento 💳</strong>
+
+            <p>
+                Podemos trabalhar com Pix,
+                cartão e outras formas de pagamento.
+            </p>
+        `;
+    }
+
+
+
+    if (
+        text.includes("atendente") ||
+        text.includes("humano") ||
+        text.includes("pessoa")
+    ) {
+
+        return `
+            <strong>Atendimento humano 👤</strong>
+
+            <p>
+                Claro! Seu atendimento pode
+                ser encaminhado para uma pessoa.
+            </p>
+        `;
+    }
+
+
+
+    if (
+        text.includes("obrigado") ||
+        text.includes("obrigada") ||
+        text.includes("valeu")
+    ) {
+
+        return `
+            <strong>Por nada! 💜</strong>
+
+            <p>
+                Sempre que precisar,
+                pode falar comigo.
+            </p>
+        `;
+    }
+
+
+
+    return `
+        <strong>Entendi 😊</strong>
+
+        <p>
+            Ainda estou aprendendo.
+            Você pode perguntar sobre
+            horários, serviços, pagamentos
+            ou solicitar um atendente.
+        </p>
+    `;
+}
+
+
+
+/* =========================
+   DIGITANDO
+========================= */
+
+function showTyping() {
+
+    typing.style.display =
+        "flex";
+}
+
+
+function hideTyping() {
+
+    typing.style.display =
+        "none";
+}
+
+
+
+/* =========================
+   ROLAR CHAT
+========================= */
+
+function scrollChat() {
+
+    const chat =
+        document.getElementById("chat");
+
+    chat.scrollTop =
+        chat.scrollHeight;
+}
+
+
+
+/* =========================
+   HORÁRIO
+========================= */
+
+function getTime() {
+
+    const now =
+        new Date();
+
+    return now.toLocaleTimeString(
+        "pt-BR",
+        {
+            hour: "2-digit",
+            minute: "2-digit"
+        }
+    );
+}
+
 
 document.querySelectorAll(".quick-actions button").forEach(button => {
   button.addEventListener("click", () => sendMessage(button.dataset.question));
