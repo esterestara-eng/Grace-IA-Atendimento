@@ -1,106 +1,74 @@
-/*
-=========================================
-GRACE IA - BACKEND
-=========================================
+require("dotenv").config();
+const Groq = require("groq-sdk");
 
-Este servidor será responsável por:
-
-1. Receber mensagens do site
-2. Validar os dados
-3. Processar a solicitação
-4. Futuramente consultar a IA
-5. Devolver a resposta para o navegador
-
-IMPORTANTE:
-Chaves de API NUNCA devem ficar no
-index.html ou script.js.
-*/
-
-
-/* =====================================
-   IMPORTAÇÕES
-===================================== */
+const groq = new Groq({
+    apiKey: process.env.GROQ_API_KEY
+});
 
 const express = require("express");
-
 const cors = require("cors");
-
-
-/* =====================================
-   CONFIGURAÇÃO
-===================================== */
+const sqlite3 = require("sqlite3").verbose();
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-const PORT =
-    process.env.PORT || 3000;
+const db = new sqlite3.Database("./grace.db", (error) => {
+    if (error) {
+        console.error("Erro ao conectar ao banco:", error);
+        return;
+    }
 
+    console.log("Banco de dados da Grace conectado.");
+});
 
-/* =====================================
-   MIDDLEWARES
-===================================== */
+db.run(`
+    CREATE TABLE IF NOT EXISTS atendimentos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome_cliente VARCHAR(100),
+        mensagem TEXT NOT NULL,
+        resposta TEXT,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+`, (error) => {
+    if (error) {
+        console.error("Erro ao criar tabela:", error);
+        return;
+    }
+
+    console.log("Tabela de atendimentos pronta.");
+});
 
 app.use(cors());
-
 app.use(express.json());
 
-
-/* =====================================
-   ROTA PRINCIPAL
-===================================== */
 
 app.get("/", function (req, res) {
 
     res.json({
-
         success: true,
-
-        message:
-            "Servidor da Grace IA funcionando.",
-
-        version:
-            "1.0.0"
-
+        message: "Servidor da Grace IA funcionando.",
+        version: "1.0.0"
     });
 
 });
 
-
-/* =====================================
-   ROTA DE TESTE
-===================================== */
 
 app.get("/api/status", function (req, res) {
 
     res.json({
-
         online: true,
-
         assistant: "Grace IA",
-
-        message:
-            "A Grace está online."
-
+        message: "A Grace está online."
     });
 
 });
 
 
-/* =====================================
-   CHAT
-===================================== */
-
-app.post("/api/chat", function (req, res) {
+app.post("/api/chat", async function (req, res) {
 
     try {
 
-        const message =
-            req.body.message;
-
-
-        /* -----------------------------
-           VALIDAR MENSAGEM
-        ----------------------------- */
+        const message = req.body.message;
 
         if (
             typeof message !== "string" ||
@@ -108,40 +76,111 @@ app.post("/api/chat", function (req, res) {
         ) {
 
             return res.status(400).json({
-
                 success: false,
-
-                error:
-                    "Mensagem inválida."
-
+                error: "Mensagem inválida."
             });
 
         }
 
-
         const cleanMessage =
             message.trim();
 
+        const completion = await groq.chat.completions.create({
+                model: "openai/gpt-oss-20b",
+         messages: [
+        {
+            role: "system",
+content: `
+Você é a Grace, assistente virtual da loja Mestre das Cores.
+Atenda em português do Brasil, com simpatia e respostas claras.
+Use texto simples, sem HTML ou Markdown.
 
-        /* -----------------------------
-           RESPOSTA TEMPORÁRIA
-        ----------------------------- */
+Informações confirmadas da loja:
+- Trabalhamos com tintas automotivas e imobiliárias.
+- Atendimento de segunda a sexta-feira, das 8h às 18h.
+- Aos sábados, das 8h às 13h.
+- Aceitamos cartão, Pix e dinheiro.
+- Também atendemos pelo WhatsApp: (11) 95684-2356.
+- Fazemos entregas em César de Souza e Mogi das Cruzes.
+- Taxas, prazos e disponibilidade de entrega devem ser confirmados pelo WhatsApp.
 
-        const response =
-            getGraceResponse(cleanMessage);
+Não invente preços, estoque, marcas, endereço, promoções ou parcelamento.
+Quando não tiver uma informação, oriente o cliente a confirmar pelo WhatsApp.
+Não afirme que realizou pedidos, pagamentos, agendamentos ou encaminhamentos.
+Se o cliente pedir atendimento humano, informe o WhatsApp da loja.
+`},
+        {
+            role: "user",
+            content: cleanMessage
+        }
+    ],
+    max_completion_tokens: 1500,
+reasoning_effort: "low"
+});
+
+const response = completion.choices[0]?.message?.content?.trim();
+
+if (!response) {
+    throw new Error("A Groq retornou uma resposta vazia.");
+}
+
+        /* =============================
+           SALVAR ATENDIMENTO NO SQLITE
+        ============================= */
+
+        const sql = `
+            INSERT INTO atendimentos
+            (
+                nome_cliente,
+                mensagem,
+                resposta
+            )
+            VALUES (?, ?, ?)
+        `;
 
 
-        /* -----------------------------
-           DEVOLVER RESPOSTA
-        ----------------------------- */
+        db.run(
+            sql,
+            [
+                "Cliente",
+                cleanMessage,
+                response
+            ],
+            function (error) {
 
-        return res.json({
+                if (error) {
 
-            success: true,
+                    console.error(
+                        "Erro ao salvar atendimento:",
+                        error
+                    );
 
-            response: response
+                    return res.status(500).json({
+                        success: false,
+                        error:
+                            "Não foi possível salvar o atendimento."
+                    });
 
-        });
+                }
+
+
+                /* =============================
+                   DEVOLVER RESPOSTA
+                ============================= */
+
+                return res.json({
+
+                    success: true,
+
+                    response: response,
+
+                    atendimento_id:
+                        this.lastID
+
+                });
+
+            }
+        );
 
     }
 
@@ -151,7 +190,6 @@ app.post("/api/chat", function (req, res) {
             "Erro no chat:",
             error
         );
-
 
         return res.status(500).json({
 
@@ -166,15 +204,8 @@ app.post("/api/chat", function (req, res) {
 
 });
 
-
-/* =====================================
-   RESPOSTAS TEMPORÁRIAS
-===================================== */
-
 function getGraceResponse(message) {
-
-    const text =
-        normalizeText(message);
+    const text = normalizeText(message);
 
 
     if (
@@ -279,10 +310,6 @@ function getGraceResponse(message) {
 }
 
 
-/* =====================================
-   NORMALIZAR TEXTO
-===================================== */
-
 function normalizeText(text) {
 
     return text
@@ -295,10 +322,6 @@ function normalizeText(text) {
 
 }
 
-
-/* =====================================
-   INICIAR SERVIDOR
-===================================== */
 
 app.listen(
     PORT,
